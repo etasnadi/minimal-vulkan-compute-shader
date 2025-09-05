@@ -1,0 +1,10 @@
+Vulkan compute shader examples
+
+minimal-example: the simplest functioning compute shader without any graphics/rendering, only introduces essential features:
+	* shader printf (debugPrintfEXT extension)
+	* enabling validation layers
+	* using specialization constants
+	* using push constants
+	* using shared storage buffers (SSBOs)
+
+Run with `VK_LAYER_PRINTF_TO_STDOUT=1 VK_LAYER_PRINTF_ONLY_PRESET=1 VK_LAYER_PRINTF_BUFFER_SIZE=500000 ./simplest` to enable shader printf.

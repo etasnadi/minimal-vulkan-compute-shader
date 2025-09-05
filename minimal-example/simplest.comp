@@ -1,0 +1,40 @@
+#version 450
+
+#extension GL_EXT_debug_printf : enable
+
+// Set the workgroup size
+layout (local_size_x = 128, local_size_y = 1, local_size_z = 1) in;
+
+// Using specialization constants
+layout (constant_id = 0) const int blockSize = 64;
+
+// Using push constants
+layout(push_constant) uniform PushConstants {
+    uint inputLength;
+    float scale;
+} pc;
+
+// Using SSBOs
+layout(std430, set=0, binding = 0) buffer InputBuffer {
+    float inputData[];
+};
+
+layout(std430, set=0, binding = 1) buffer OutputBuffer {
+    float outputData[];
+};
+
+bool first_thread = gl_LocalInvocationID.x == 0 && gl_LocalInvocationID.y == 0 && gl_LocalInvocationID.z == 0;
+bool first_workgroup = gl_WorkGroupID.x == 0 && gl_WorkGroupID.y == 0 && gl_WorkGroupID.z == 0;
+
+void main() {
+    if(first_thread && first_workgroup){
+        debugPrintfEXT("Shader - block size: %d\n", blockSize);
+        debugPrintfEXT("Shader - input length: %d, scale: %f\n", pc.inputLength, pc.scale);
+        debugPrintfEXT("Shader - input:\n");
+        for(int i = 0; i < pc.inputLength; i++){
+            outputData[i] = pc.scale*inputData[i];
+            debugPrintfEXT("%.4f\t", inputData[i]);
+        }
+        debugPrintfEXT("\n");
+    }
+}
